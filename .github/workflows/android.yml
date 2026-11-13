@@ -20,13 +20,18 @@ jobs:
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+
+      - name: Accept Android licenses
+        run: yes | sdkmanager --licenses || true
 
       - name: Install Android platform
-        run: sdkmanager "platforms;android-37-ext1"
+        run: sdkmanager --install "platforms;android-37-ext1"
 
       - name: Extract source
         run: |
-          unzip Kvaesitso-modificado.zip -d source
+          unzip -q Kvaesitso-modificado.zip -d source
           chmod +x source/Kvaesitso-main/gradlew
 
       - name: Build APK
@@ -38,3 +43,4 @@ jobs:
         with:
           name: Kvaesitso-debug-APK
           path: source/Kvaesitso-main/app/app/build/outputs/apk/default/debug/*.apk
+          if-no-files-found: error
