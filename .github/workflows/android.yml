@@ -1,0 +1,40 @@
+
+name: Build Kvaesitso APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android platform
+        run: sdkmanager "platforms;android-37-ext1"
+
+      - name: Extract source
+        run: |
+          unzip Kvaesitso-modificado.zip -d source
+          chmod +x source/Kvaesitso-main/gradlew
+
+      - name: Build APK
+        working-directory: source/Kvaesitso-main
+        run: ./gradlew :app:app:assembleDefaultDebug --no-daemon
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Kvaesitso-debug-APK
+          path: source/Kvaesitso-main/app/app/build/outputs/apk/default/debug/*.apk
